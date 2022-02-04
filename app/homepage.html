@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Page</title>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+        }
+.main {
+    height: 100%;
+    width: 100%;
+    display: table;
+}
+.wrapper {
+    display: table-cell;
+    text-align: center;
+    height: 100%;
+    vertical-align: middle;
+    color: white;
+}
+    </style>
+  </head>
+  <body style="background: {{.Color }};">
+    <div class="main">
+        <div class="wrapper">
+            <h1><i>{{.Text}}</i></h1>
+        </div>
+    </div>
+  </body>
+</html>
