@@ -1,0 +1,42 @@
+### Only K8s Cluster Admin can execute this file
+### Pre-requisite - Create users/groups defined in RoleBinding section
+---
+# Create the app specific namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: green
+---
+## Resource Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: medium
+  namespace: green
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: "4Gi"
+
+---
+## Default limits
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+  namespace: green
+spec:
+  limits:
+  - default:
+      cpu: 100m
+      memory: 100Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 100Mi
+    max:
+      cpu: "0.1"
+      memory: 100Mi
+    min:
+      cpu: "0.1"
+      memory: 100Mi
+    type: Container

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green
+spec:
+  selector:
+    matchLabels:
+      app: green
+  template:
+    metadata:
+      labels:
+        app: green
+    spec:
+      containers:
+      - name: green
+        image: avinashdesireddy/colored-canavas:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+        - name: COLOR
+          value: "green"
+        - name: TITLE
+          value: "GREEN: OPA Demo"
+        - name: DESCRIPTION
+          value: ""
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: green-svc
+spec:
+  selector:
+    app: green
+  ports:
+  - port: 8080
+    targetPort: 8080

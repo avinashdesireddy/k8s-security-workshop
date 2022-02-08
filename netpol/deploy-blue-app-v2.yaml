@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: mysql-secret
+data:
+    DB_Host: MTMuNTYuNDkuMTM0
+    DB_User: YWRtaW4=
+    DB_Password: Q2xvdWRXb3JsZDIwMjI=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue
+spec:
+  selector:
+    matchLabels:
+      app: blue
+  template:
+    metadata:
+      labels:
+        app: blue
+        backend: mysql
+    spec:
+      containers:
+      - name: blue
+        image: avinashdesireddy/colored-canavas:v2
+        imagePullPolicy: Always
+        env:
+        - name: COLOR
+          value: "blue"
+        - name: TITLE
+          value: "BLUE: Network Policy Demo"
+        - name: DESCRIPTION
+          value: "Network Policy Example - use /mysql & /api endpoints to test respective connections"
+        - name: API_ENDPOINT
+          value: "http://green-svc.green.svc.cluster.local:8080"
+          #value: "https://httpbin.org/get"
+        - name: DB_Database
+          value: "avengers"
+        envFrom:
+        - secretRef:
+            name: mysql-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blue-svc
+spec:
+  selector:
+    app: blue
+  ports:
+  - port: 8080
+    targetPort: 8080

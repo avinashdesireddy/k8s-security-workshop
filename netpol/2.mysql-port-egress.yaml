@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mysql-port-egress
+spec:
+  podSelector:
+    matchLabels:
+      backend: mysql
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 13.56.49.134/32
+    ports:
+    - protocol: TCP
+      port: 3306

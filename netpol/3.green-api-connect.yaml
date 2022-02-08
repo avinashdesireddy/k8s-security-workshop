@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+ name: to-green-egress
+ namespace: blue
+spec:
+ podSelector:
+   matchLabels: 
+     app: blue
+ policyTypes:
+ - Egress
+ egress:
+ - to:
+   - namespaceSelector:
+       matchLabels:
+         app: green
+   - podSelector:
+       matchLabels:
+         app: green
+   ports:
+   - protocol: TCP
+     port: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+ name: from-blue-ingress
+ namespace: green
+spec:
+ podSelector:
+   matchLabels: 
+     app: green
+ policyTypes:
+ - Ingress
+ ingress:
+ - from:
+   - namespaceSelector:
+       matchLabels:
+         app: blue
+   - podSelector:
+       matchLabels:
+         app: blue

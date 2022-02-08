@@ -1,0 +1,69 @@
+### Only K8s Cluster Admin can execute this file
+### Pre-requisite - Create users/groups defined in RoleBinding section
+---
+# Create the app specific namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blue
+---
+# Create the Role resource to read the gMSA credspec
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: blue-role
+  namespace: blue
+rules:
+- apiGroups: ["", "apps"]
+  resources: ["deployments", "services", "pods"]
+  verbs: ["list", "get", "watch", "create", "update", "patch", "delete"]
+---
+# Create the RoleBinding resource to allow d-qualityhold and default access using gMSA-reach-dev
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: blue-rb
+  namespace: blue
+subjects:
+- apiGroup: rbac.authorization.k8s.io 
+  kind: User
+  name: blue
+roleRef:
+  kind: Role
+  name: blue-role
+  apiGroup: rbac.authorization.k8s.io  
+
+---
+## Resource Quota
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: small
+  namespace: blue
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: "2Gi"
+
+---
+## Default limits
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limits
+  namespace: blue
+spec:
+  limits:
+  - default:
+      cpu: 100m
+      memory: 100Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 100Mi
+    max:
+      cpu: "0.1"
+      memory: 100Mi
+    min:
+      cpu: "0.1"
+      memory: 100Mi
+    type: Container

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green
+spec:
+  selector:
+    matchLabels:
+      app: green
+  template:
+    metadata:
+      labels:
+        app: green
+    spec:
+      containers:
+      - name: green
+        image: avinashdesireddy/colored-canavas:latest
+        imagePullPolicy: Always
+        env:
+        - name: COLOR
+          value: "green"
+        - name: TITLE
+          value: "GREEN: RBAC Demo"
+        - name: DESCRIPTION
+          value: ""
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: green-svc
+spec:
+  selector:
+    app: green
+  ports:
+  - port: 8080
+    targetPort: 8080

@@ -1,0 +1,31 @@
+# template.yaml
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequiredresourcequota
+  annotations:
+    description: Requires Pods to launch in Namespaces with ResourceQuotas.
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequiredResourceQuota
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8srequiredresourcequota
+
+        violation[{"msg": msg}] {
+          input.review.object.kind = ["Pod"]
+          requestns := input.review.object.metadata.namespace
+          not data.inventory.namespace[requestns]["v1"]["ResourceQuota"]
+          msg := sprintf("container <%v> could not be created because the <%v> namespace does not have ResourceQuotas defined", [input.review.object.metadata.name,input.review.object.metadata.namespace])
+        }
+
+        violation[{"msg": msg}] {
+          input.review.object.kind == "Deployment"
+          requestns := input.review.object.metadata.namespace
+          not data.inventory.namespace[requestns]["v1"]["ResourceQuota"]
+          msg := sprintf("Deployment <%v> could not be created because the <%v> namespace does not have ResourceQuotas defined", [input.review.object.metadata.name,input.review.object.metadata.namespace])
+        }
+
